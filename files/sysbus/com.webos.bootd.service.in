@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=com.webos.bootManager
+Exec=@WEBOS_INSTALL_SBINDIR@/bootd
+Type=static

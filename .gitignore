@@ -1,0 +1,8 @@
+BUILD*
+Environment.h
+src/bootd/Configuration.h
+build/*
+*.kdev4
+build-bootd.stamp
+oe-logs
+oe-workdir

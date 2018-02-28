@@ -1,0 +1,13 @@
+{
+    "common" : {
+        "description" : "default configuration values",
+        "resourcemon" : {
+            "waitCpuUnder" : 50,
+            "startAfter" : 2
+        },
+        "logger" : {
+            "logType" : ["file", "pmlog"],
+            "logLevel" : "debug"
+        }
+    }
+}

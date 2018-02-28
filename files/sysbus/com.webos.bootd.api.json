@@ -1,0 +1,11 @@
+{
+    "system" : [
+        "com.webos.bootManager/generateSignal",
+        "com.webos.bootManager/getBootStatus"
+    ],
+    "activities.callbacks" : [
+        "com.webos.bootManager/generateSignal",
+        "com.webos.settingsservice/getSystemSettings"
+    ]
+}
+
