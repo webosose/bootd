@@ -106,6 +106,7 @@ AbsBootSequencer::AbsBootSequencer()
 
 AbsBootSequencer::~AbsBootSequencer()
 {
+    g_main_loop_unref(m_mainLoop);
 }
 
 string AbsBootSequencer::getBootStatus()
