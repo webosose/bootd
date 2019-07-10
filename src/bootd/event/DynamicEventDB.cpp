@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2018 LG Electronics, Inc.
+// Copyright (c) 2013-2019 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
 #include "DynamicEventDB.h"
 
 const char *DynamicEventDB::EVENT_BOOT_COMPLETE = "boot-complete";
+const char *DynamicEventDB::EVENT_FIRSTAPP_LAUNCHED = "firstapp-launched";
 
 const char *DynamicEventDB::KEY_READY = "ready";
 const char *DynamicEventDB::KEY_TIME = "time";

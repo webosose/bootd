@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2018 LG Electronics, Inc.
+// Copyright (c) 2016-2019 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -208,6 +208,10 @@ void AbsBootSequencer::onForegroundAppChange(string &appId)
     if (DynamicEventDB::instance()->isWaitSomething()) {
         // We don't need to notify 'foreground' event if EventCore doesn't wait it.
         DynamicEventDB::instance()->triggerEvent(appId);
+    }
+
+    if (!DynamicEventDB::instance()->getEventStatus(DynamicEventDB::EVENT_FIRSTAPP_LAUNCHED)) {
+        DynamicEventDB::instance()->triggerEvent(DynamicEventDB::EVENT_FIRSTAPP_LAUNCHED);
     }
 
     m_foregroundAppId = appId;
