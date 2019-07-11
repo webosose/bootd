@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2018 LG Electronics, Inc.
+// Copyright (c) 2016-2019 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -44,18 +44,20 @@ void DefaultBootSequencer::doBoot()
     m_curPowerStatus = PowerStatus::PowerStatus_active;
     m_curBootTarget = BootTarget::BootTarget_hardware;
 
+    // Always launch firstapp (bareapp) first
+    launchTargetApp();
+    DynamicEventDB::instance()->waitEvent(m_mainLoop, DynamicEventDB::EVENT_FIRSTAPP_LAUNCHED, EventCoreTimeout::EventCoreTimeout_Middle);
+
     proceedCoreBootDone();
     proceedInitBootDone();
     proceedDataStoreInitStart();
+    ApplicationManager::instance()->listLaunchPoints(&m_bootManager, EventCoreTimeout::EventCoreTimeout_Max);
     proceedMinimalBootDone();
     proceedRestBootDone();
     proceedBootDone();
 
     DynamicEventDB::instance()->triggerEvent(DynamicEventDB::EVENT_BOOT_COMPLETE);
     g_Logger.infoLog(Logger::MSGID_BOOTSEQUENCER, "Bootd's job is done");
-
-    ApplicationManager::instance()->listLaunchPoints(&m_bootManager, EventCoreTimeout::EventCoreTimeout_Max);
-    launchTargetApp();
 }
 
 void DefaultBootSequencer::launchTargetApp()
