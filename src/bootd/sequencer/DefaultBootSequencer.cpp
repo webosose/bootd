@@ -45,7 +45,7 @@ void DefaultBootSequencer::doBoot()
     m_curBootTarget = BootTarget::BootTarget_hardware;
 
     // Always launch firstapp (bareapp) first
-    launchTargetApp();
+    launchTargetApp("bareapp", true);
     DynamicEventDB::instance()->waitEvent(m_mainLoop, DynamicEventDB::EVENT_FIRSTAPP_LAUNCHED, EventCoreTimeout::EventCoreTimeout_Middle);
 
     proceedCoreBootDone();
@@ -56,20 +56,46 @@ void DefaultBootSequencer::doBoot()
     proceedRestBootDone();
     proceedBootDone();
 
+    ApplicationManager::instance()->running(&m_bootManager, this);
+
     DynamicEventDB::instance()->triggerEvent(DynamicEventDB::EVENT_BOOT_COMPLETE);
     g_Logger.infoLog(Logger::MSGID_BOOTSEQUENCER, "Bootd's job is done");
 }
 
-void DefaultBootSequencer::launchTargetApp()
+void DefaultBootSequencer::launchTargetApp(string appId, bool visible)
 {
     Application application;
-    application.setAppId("bareapp");
+    application.setAppId(appId);
+    application.setVisible(visible);
 
     for (int i = 0; i < COUNT_LAUNCH_RETRY; i++) {
         if (ApplicationManager::instance()->launch(&m_bootManager, application)) {
-            g_Logger.infoLog(Logger::MSGID_BOOTSEQUENCER, "Launch first app (%s)", application.getAppId().c_str());
+            if (visible)
+                g_Logger.infoLog(Logger::MSGID_BOOTSEQUENCER, "Launch target app (%s) on foreground", application.getAppId().c_str());
+            else
+                g_Logger.infoLog(Logger::MSGID_BOOTSEQUENCER, "Launch target app (%s) on background", application.getAppId().c_str());
             break;
         }
         g_Logger.warningLog(Logger::MSGID_BOOTSEQUENCER, "Fail to launch '%s'. Retry...(%d)", application.getAppId().c_str(), i);
     }
+}
+
+void DefaultBootSequencer::onRunning(JValue &runninglist)
+{
+    bool isRunningHomeApp = false;
+    bool isRunningVolumeApp = false;
+
+    g_Logger.debugLog(Logger::MSGID_BOOTSEQUENCER, "Running list : %s", runninglist.stringify().c_str());
+
+    for (int i = 0; i < runninglist["running"].arraySize(); i++) {
+        if (runninglist["running"][i]["id"].asString() == "com.webos.app.home")
+            isRunningHomeApp = true;
+        else if (runninglist["running"][i]["id"].asString() == "com.webos.app.volume")
+            isRunningVolumeApp = true;
+    }
+
+    if (!isRunningHomeApp)
+        launchTargetApp("com.webos.app.home", false);
+    if (!isRunningVolumeApp)
+        launchTargetApp("com.webos.app.volume", false);
 }
