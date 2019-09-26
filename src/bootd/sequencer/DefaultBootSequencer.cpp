@@ -45,7 +45,7 @@ void DefaultBootSequencer::doBoot()
     m_curBootTarget = BootTarget::BootTarget_hardware;
 
     // Always launch firstapp (bareapp) first
-    launchTargetApp("bareapp", true);
+    launchTargetApp("bareapp", true, false);
     DynamicEventDB::instance()->waitEvent(m_mainLoop, DynamicEventDB::EVENT_FIRSTAPP_LAUNCHED, EventCoreTimeout::EventCoreTimeout_Middle);
 
     proceedCoreBootDone();
@@ -62,11 +62,14 @@ void DefaultBootSequencer::doBoot()
     g_Logger.infoLog(Logger::MSGID_BOOTSEQUENCER, "Bootd's job is done");
 }
 
-void DefaultBootSequencer::launchTargetApp(string appId, bool visible)
+void DefaultBootSequencer::launchTargetApp(string appId, bool visible, bool keepAlive)
 {
     Application application;
     application.setAppId(appId);
     application.setVisible(visible);
+
+    if (keepAlive)
+        application.setKeepAlive(keepAlive);
 
     for (int i = 0; i < COUNT_LAUNCH_RETRY; i++) {
         if (ApplicationManager::instance()->launch(&m_bootManager, application)) {
@@ -95,7 +98,7 @@ void DefaultBootSequencer::onRunning(JValue &runninglist)
     }
 
     if (!isRunningHomeApp)
-        launchTargetApp("com.webos.app.home", false);
+        launchTargetApp("com.webos.app.home", false, true);
     if (!isRunningVolumeApp)
-        launchTargetApp("com.webos.app.volume", false);
+        launchTargetApp("com.webos.app.volume", false, true);
 }

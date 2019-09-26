@@ -28,7 +28,7 @@ public:
 
 protected:
     void doBoot();
-    void launchTargetApp(string appId, bool visible);
+    void launchTargetApp(string appId, bool visible, bool keepAlive);
 };
 
 #endif /* DEFAULTBOOTSEQUENCER_H_ */

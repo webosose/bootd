@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2018 LG Electronics, Inc.
+// Copyright (c) 2015-2019 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -54,6 +54,9 @@ public:
     void setForeground(bool foreground);
     bool isForeground();
 
+    void setKeepAlive(bool keepAlive);
+    bool isKeepAlive();
+
 private:
     string m_appId;
     JValue m_params;
@@ -63,6 +66,7 @@ private:
     bool m_isMvpdApp;
     bool m_isLaunched;
     bool m_isForeground;
+    bool m_isKeepAlive;
 };
 
 
