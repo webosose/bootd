@@ -46,6 +46,7 @@ void DefaultBootSequencer::doBoot()
 
     // Always launch firstapp (bareapp) first
     launchTargetApp("bareapp", true, false);
+    launchTargetApp("com.webos.app.home", false, false);
     DynamicEventDB::instance()->waitEvent(m_mainLoop, DynamicEventDB::EVENT_FIRSTAPP_LAUNCHED, EventCoreTimeout::EventCoreTimeout_Middle);
 
     proceedCoreBootDone();
@@ -86,19 +87,14 @@ void DefaultBootSequencer::launchTargetApp(string appId, bool visible, bool keep
 void DefaultBootSequencer::onRunning(JValue &runninglist)
 {
     bool isRunningHomeApp = false;
-    bool isRunningVolumeApp = false;
 
     g_Logger.debugLog(Logger::MSGID_BOOTSEQUENCER, "Running list : %s", runninglist.stringify().c_str());
 
     for (int i = 0; i < runninglist["running"].arraySize(); i++) {
         if (runninglist["running"][i]["id"].asString() == "com.webos.app.home")
             isRunningHomeApp = true;
-        else if (runninglist["running"][i]["id"].asString() == "com.webos.app.volume")
-            isRunningVolumeApp = true;
     }
 
     if (!isRunningHomeApp)
-        launchTargetApp("com.webos.app.home", false, true);
-    if (!isRunningVolumeApp)
-        launchTargetApp("com.webos.app.volume", false, true);
+        launchTargetApp("com.webos.app.home", false, false);
 }
