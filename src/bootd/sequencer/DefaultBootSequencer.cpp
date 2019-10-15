@@ -46,8 +46,8 @@ void DefaultBootSequencer::doBoot()
 
     // Always launch firstapp (bareapp) first
     launchTargetApp("bareapp", true, false);
+    DynamicEventDB::instance()->waitEvent(m_mainLoop, DynamicEventDB::EVENT_FIRSTAPP_LAUNCHED, EventCoreTimeout::EventCoreTimeout_Min);
     launchTargetApp("com.webos.app.home", true, true); // launchedHidden : false , keepAlive : true
-    DynamicEventDB::instance()->waitEvent(m_mainLoop, DynamicEventDB::EVENT_FIRSTAPP_LAUNCHED, EventCoreTimeout::EventCoreTimeout_Middle);
 
     proceedCoreBootDone();
     proceedInitBootDone();
