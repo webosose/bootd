@@ -46,9 +46,6 @@ JValue Application::getJson()
     object.put("id", m_appId);
     // visible(launchedHidden) should be used in params
     m_params.put("launchedHidden", !m_visible);
-    if (!m_visible) {
-        object.put("preload", "full");
-    }
     if (m_isKeepAlive) {
         object.put("keepAlive", m_isKeepAlive);
     }
