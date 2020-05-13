@@ -30,6 +30,7 @@ Application::~Application()
 void Application::clear()
 {
     m_appId = "";
+    m_displayId = 0;
     // Basically, all apps launched by bootd is 'visible':true and 'splash':false
     m_visible = true;
     m_launchSplash = false;
@@ -154,4 +155,10 @@ void Application::setKeepAlive(bool keepAlive)
 bool Application::isKeepAlive()
 {
     return m_isKeepAlive;
+}
+
+void Application::setDisplayId(int displayId)
+{
+    m_displayId = displayId;
+    m_params.put("displayAffinity", m_displayId);
 }

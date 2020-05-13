@@ -44,10 +44,19 @@ void DefaultBootSequencer::doBoot()
     m_curPowerStatus = PowerStatus::PowerStatus_active;
     m_curBootTarget = BootTarget::BootTarget_hardware;
 
-    // Always launch firstapp (bareapp) first
-    launchTargetApp("bareapp", true, false);
-    DynamicEventDB::instance()->waitEvent(m_mainLoop, DynamicEventDB::EVENT_FIRSTAPP_LAUNCHED, EventCoreTimeout::EventCoreTimeout_Min);
-    launchTargetApp("com.webos.app.home", true, true); // launchedHidden : false , keepAlive : true
+    int displayCnt = StaticEventDB::instance()->getDisplayCnt();
+    g_Logger.debugLog(Logger::MSGID_BOOTSEQUENCER, "Display device count : (%d)", displayCnt);
+
+    if (displayCnt == 2) {
+        // Launch home on display0 and launch bareapp on display1
+        launchTargetApp("com.webos.app.home", true, true, 0); // launchedHidden : false , keepAlive : true
+        launchTargetApp("bareapp", true, false, 1);
+    } else {
+        // Always launch firstapp (bareapp) first
+        launchTargetApp("bareapp", true, false);
+        DynamicEventDB::instance()->waitEvent(m_mainLoop, DynamicEventDB::EVENT_FIRSTAPP_LAUNCHED, EventCoreTimeout::EventCoreTimeout_Min);
+        launchTargetApp("com.webos.app.home", true, true); // launchedHidden : false , keepAlive : true
+    }
 
     proceedCoreBootDone();
     proceedInitBootDone();
@@ -63,11 +72,12 @@ void DefaultBootSequencer::doBoot()
     g_Logger.infoLog(Logger::MSGID_BOOTSEQUENCER, "Bootd's job is done");
 }
 
-void DefaultBootSequencer::launchTargetApp(string appId, bool visible, bool keepAlive)
+void DefaultBootSequencer::launchTargetApp(string appId, bool visible, bool keepAlive, int displayId)
 {
     Application application;
     application.setAppId(appId);
     application.setVisible(visible);
+    application.setDisplayId(displayId);
 
     if (keepAlive)
         application.setKeepAlive(keepAlive);
@@ -82,19 +92,4 @@ void DefaultBootSequencer::launchTargetApp(string appId, bool visible, bool keep
         }
         g_Logger.warningLog(Logger::MSGID_BOOTSEQUENCER, "Fail to launch '%s'. Retry...(%d)", application.getAppId().c_str(), i);
     }
-}
-
-void DefaultBootSequencer::onRunning(JValue &runninglist)
-{
-    bool isRunningHomeApp = false;
-
-    g_Logger.debugLog(Logger::MSGID_BOOTSEQUENCER, "Running list : %s", runninglist.stringify().c_str());
-
-    for (int i = 0; i < runninglist["running"].arraySize(); i++) {
-        if (runninglist["running"][i]["id"].asString() == "com.webos.app.home")
-            isRunningHomeApp = true;
-    }
-
-    if (!isRunningHomeApp)
-        launchTargetApp("com.webos.app.home", false, true); // launchedHidden : true , keepAlive : true
 }
