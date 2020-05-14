@@ -28,6 +28,7 @@
 
 #include "Main.h"
 #include "util/JUtil.h"
+#include "util/UnixUtils.h"
 
 using namespace std;
 using namespace pbnjson;
@@ -66,6 +67,8 @@ public:
     {
         return m_isNFSBoot;
     }
+
+    int getDisplayCnt();
 
 private:
     StaticEventDB();

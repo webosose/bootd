@@ -24,11 +24,9 @@ public:
     DefaultBootSequencer();
     virtual ~DefaultBootSequencer();
 
-    void onRunning(JValue &runninglist);
-
 protected:
     void doBoot();
-    void launchTargetApp(string appId, bool visible, bool keepAlive);
+    void launchTargetApp(string appId, bool visible, bool keepAlive, int displayId=0);
 };
 
 #endif /* DEFAULTBOOTSEQUENCER_H_ */

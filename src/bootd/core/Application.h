@@ -57,8 +57,11 @@ public:
     void setKeepAlive(bool keepAlive);
     bool isKeepAlive();
 
+    void setDisplayId(int displayId);
+
 private:
     string m_appId;
+    int m_displayId;
     JValue m_params;
 
     bool m_visible;

@@ -59,6 +59,14 @@ void StaticEventDB::printInformation()
     g_Logger.infoLog(Logger::MSGID_SETTINGS, "--TimeDiff=%ld.%ld(s) ", basetime.tv_sec, basetime.tv_nsec ? (basetime.tv_nsec / 1000000) : 0);
 }
 
+int StaticEventDB::getDisplayCnt()
+{
+    if (isFileExist("/sys/class/drm/card0-HDMI-A-2"))
+        return 2;
+    else
+        return 1;
+}
+
 void StaticEventDB::updateConf(pbnjson::JValue jsonConf)
 {
     if (jsonConf.hasKey(KEY_LOGGER)) {
