@@ -49,8 +49,11 @@ void DefaultBootSequencer::doBoot()
 
     if (displayCnt == 2) {
         // Launch home on display0 and launch bareapp on display1
-        launchTargetApp("com.webos.app.home", true, true, 0); // launchedHidden : false , keepAlive : true
+        launchTargetApp("bareapp", true, false, 0);
         launchTargetApp("bareapp", true, false, 1);
+        DynamicEventDB::instance()->waitEvent(m_mainLoop, DynamicEventDB::EVENT_FIRSTAPP_LAUNCHED, EventCoreTimeout::EventCoreTimeout_Min);
+        launchTargetApp("com.webos.app.home", true, true, 0); // launchedHidden : false , keepAlive : true
+        launchTargetApp("com.webos.app.home", true, true, 1); // launchedHidden : false , keepAlive : true
     } else {
         // Always launch firstapp (bareapp) first
         launchTargetApp("bareapp", true, false);
