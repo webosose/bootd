@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2019 LG Electronics, Inc.
+// Copyright (c) 2016-2020 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -54,11 +54,15 @@ void DefaultBootSequencer::doBoot()
         DynamicEventDB::instance()->waitEvent(m_mainLoop, DynamicEventDB::EVENT_FIRSTAPP_LAUNCHED, EventCoreTimeout::EventCoreTimeout_Min);
         launchTargetApp("com.webos.app.home", true, true, 0); // launchedHidden : false , keepAlive : true
         launchTargetApp("com.webos.app.home", true, true, 1); // launchedHidden : false , keepAlive : true
+
+        launchTargetApp("com.webos.app.notification", false, true, 0); // launchedHidden : false , keepAlive : true
+        launchTargetApp("com.webos.app.notification", false, true, 1); // launchedHidden : false , keepAlive : true
     } else {
         // Always launch firstapp (bareapp) first
         launchTargetApp("bareapp", true, false);
         DynamicEventDB::instance()->waitEvent(m_mainLoop, DynamicEventDB::EVENT_FIRSTAPP_LAUNCHED, EventCoreTimeout::EventCoreTimeout_Min);
         launchTargetApp("com.webos.app.home", true, true); // launchedHidden : false , keepAlive : true
+        launchTargetApp("com.webos.app.notification", false, true); // launchedHidden : false , keepAlive : true
     }
 
     proceedCoreBootDone();
