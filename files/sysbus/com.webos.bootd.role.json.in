@@ -12,7 +12,8 @@
                 "com.webos.service.config",
                 "com.webos.service.connectionmanager",
                 "com.webos.settingsservice",
-                "com.webos.surfacemanager"
+                "com.webos.surfacemanager",
+                "com.webos.service.activitymanager.client"
             ]
         }
     ]
