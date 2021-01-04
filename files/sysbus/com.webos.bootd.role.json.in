@@ -1,18 +1,13 @@
 {
     "exeName":"@WEBOS_INSTALL_SBINDIR@/bootd",
+    "trustLevel": "oem",
     "type": "regular",
     "allowedNames": ["com.webos.bootManager"],
     "permissions": [
         {
             "service":"com.webos.bootManager",
             "outbound": [
-                "com.webos.applicationManager",
-                "com.webos.service.activitymanager",
-                "com.webos.service.attachedstoragemanager",
-                "com.webos.service.config",
-                "com.webos.service.connectionmanager",
-                "com.webos.settingsservice",
-                "com.webos.surfacemanager"
+                "*"
             ]
         }
     ]

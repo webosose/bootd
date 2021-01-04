@@ -1,0 +1,5 @@
+{
+    "allowedNames": [],
+    "boot.query": ["oem"],
+    "boot.management": ["oem"]
+}
