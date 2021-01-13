@@ -1,14 +1,6 @@
 {
     "com.webos.bootManager": [
-        "devices",
-        "applications.internal",
-        "settings",
-        "activities",
-        "networking.internal",
-        "launcher.control",
-        "launcher.status",
-        "surfaces.control",
-        "surfaces.status",
-        "private"
+        "application.operation",
+        "application.launcher"
     ]
 }

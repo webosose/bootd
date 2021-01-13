@@ -1,5 +1,5 @@
 {
-    "allowedNames": [],
+    "allowedNames": ["com.webos.bootManager"],
     "boot.query": ["oem"],
     "boot.management": ["oem"]
 }
