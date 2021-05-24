@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2020 LG Electronics, Inc.
+// Copyright (c) 2016-2021 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@ DefaultBootSequencer::~DefaultBootSequencer()
 void DefaultBootSequencer::doBoot()
 {
     /* DefaultBootSequencer is just booting. */
-    PmtScopedBlock(PMTRACE_DEFAULT_CATEGORY);
     g_Logger.debugLog(Logger::MSGID_BOOTSEQUENCER, "Start DefaultBootSequencer");
 
     m_bootManager.init(m_mainLoop, this);

@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2018 LG Electronics, Inc.
+// Copyright (c) 2013-2021 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -76,8 +76,6 @@ bool SignalManager::generate(string name, const bool isSync)
     }
     command += name;
     g_Logger.performanceLog(Logger::MSGID_BOOT, "SIGNAL_%s", name.c_str());
-
-    PmtMarker(PMTRACE_DEFAULT_CATEGORY, "SignalGenerate", PMTKVS("signal", name.c_str()));
 
     if (-1 == system(command.c_str())) {
         g_Logger.warningLog(Logger::MSGID_UPSTART, "Generating '%s' fails", name.c_str());
