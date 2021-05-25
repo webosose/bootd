@@ -1,4 +1,4 @@
-# Copyright (c) 2015-2018 LG Electronics, Inc.
+# Copyright (c) 2015-2021 LG Electronics, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -44,10 +44,6 @@ pkg_check_modules(LUNASERVICE2PP REQUIRED luna-service2++)
 include_directories(${LUNASERVICE2PP_INCLUDE_DIRS})
 webos_add_compiler_flags(ALL ${LUNASERVICE2PP_CFLAGS_OTHER})
 
-pkg_check_modules(PMTRACE REQUIRED PmTrace)
-include_directories(${PMTRACE_INCLUDE_DIRS})
-webos_add_compiler_flags(ALL ${PMTRACE_CFLAGS_OTHER})
-
 # Basic
 set(BIN_NAME bootd)
 file(GLOB_RECURSE SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
@@ -70,7 +66,6 @@ set(LIBS ${GLIB2_LDFLAGS}
     ${LTTNG_LDFLAGS}
     ${LUNASERVICE2_LDFLAGS}
     ${LUNASERVICE2PP_LDFLAGS}
-    ${PMTRACE_LDFLAGS}
 )
 target_link_libraries(${BIN_NAME} ${LIBS})
 
