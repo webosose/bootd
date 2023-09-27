@@ -61,10 +61,65 @@ void StaticEventDB::printInformation()
 
 int StaticEventDB::getDisplayCnt()
 {
-    if (isFileExist("/sys/class/drm/card0-HDMI-A-2"))
+    // check files and folders for debug
+    bool Hdmi_A1_ready=false;
+    bool Hdmi_A2_ready=false;
+    string Hdmi_A1_enabledFile="/sys/class/drm/card0-HDMI-A-1/enabled";
+    string Hdmi_A1_statusFile="/sys/class/drm/card0-HDMI-A-1/status";
+    string Hdmi_A2_enabledFile="/sys/class/drm/card0-HDMI-A-2/enabled";
+    string Hdmi_A2_statusFile="/sys/class/drm/card0-HDMI-A-2/status";
+    ifstream file;
+    string Hdmi_A1_enabled = "", Hdmi_A1_status = "", Hdmi_A2_enabled = "", Hdmi_A2_status = "";
+
+    file.open(Hdmi_A1_enabledFile);
+    if (file.fail()) {
+        g_Logger.debugLog(Logger::MSGID_SETTINGS, "%s=File Open Failed(%s)", __FUNCTION__, Hdmi_A1_enabledFile.c_str());
+    } else {
+        std::getline(file, Hdmi_A1_enabled);
+        file.close();
+    }
+
+    file.open(Hdmi_A1_statusFile);
+    if (file.fail()) {
+        g_Logger.debugLog(Logger::MSGID_SETTINGS, "%s=File Open Failed(%s)", __FUNCTION__, Hdmi_A1_statusFile.c_str());
+    } else {
+        std::getline(file, Hdmi_A1_status);
+        file.close();
+    }
+
+    if (Hdmi_A1_enabled == "enabled" && Hdmi_A1_status == "connected") {
+        Hdmi_A1_ready = true;
+    }
+
+    file.open(Hdmi_A2_enabledFile);
+    if (file.fail()) {
+        g_Logger.debugLog(Logger::MSGID_SETTINGS, "%s=File Open Failed(%s)", __FUNCTION__, Hdmi_A2_enabledFile.c_str());
+    } else {
+        std::getline(file, Hdmi_A2_enabled);
+        file.close();
+    }
+
+    file.open(Hdmi_A2_statusFile);
+    if (file.fail()) {
+        g_Logger.debugLog(Logger::MSGID_SETTINGS, "%s=File Open Failed(%s)", __FUNCTION__, Hdmi_A2_statusFile.c_str());
+    } else {
+        std::getline(file, Hdmi_A2_status);
+        file.close();
+    }
+
+    if (Hdmi_A2_enabled == "enabled" && Hdmi_A2_status == "connected") {
+        Hdmi_A2_ready = true;
+    }
+
+    g_Logger.debugLog(Logger::MSGID_SETTINGS, "card0-HDMI-A-1(%s) enabled(%s), status(%s)/ card0-HDMI-A-2(%s) enabled(%s), status(%s)",
+                                               Hdmi_A1_ready ? "ready" : "not ready", Hdmi_A1_enabled.c_str(), Hdmi_A1_status.c_str(),
+                                               Hdmi_A2_ready ? "ready" : "not ready", Hdmi_A2_enabled.c_str(), Hdmi_A2_status.c_str());
+
+    if (Hdmi_A1_ready && Hdmi_A2_ready) {
         return 2;
-    else
+    } else {
         return 1;
+    }
 }
 
 void StaticEventDB::updateConf(pbnjson::JValue jsonConf)

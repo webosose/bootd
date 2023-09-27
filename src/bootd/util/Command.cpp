@@ -43,14 +43,24 @@ void Command::addArg(string arg)
 
 bool Command::exec()
 {
-    int memsize = sizeof(char*) * (m_args.size() + 2);
+    std::size_t memsize = 0;
+
+    std::size_t size = m_args.size() + 2; //CID 9006407 CERT-C Integers
+
+    if (size < m_args.size())
+        return false;
+    else
+        memsize = sizeof(char*) * size;
 
     char **command = (char **)malloc(memsize);
-    memset(command, 0, memsize);
+    if (command)
+        memset(command, 0, memsize);    //coverity CID 9154143
+    else
+        return false;
 
-    command[0] = (char*)m_comm.c_str();
+    command[0] = &*m_comm.begin();//m_comm.c_str());
     for (unsigned int i = 0; i < m_args.size(); i++) {
-        command[i+1] = (char*)m_args.at(i).c_str();
+        command[i+1] = &*(m_args.at(i).begin());    //coverity CID-9042669
     }
 
     g_Logger.debugLog(Logger::MSGID_UTIL, "Forking %s", m_comm.c_str());
