@@ -61,10 +61,58 @@ void StaticEventDB::printInformation()
 
 int StaticEventDB::getDisplayCnt()
 {
-    if (isFileExist("/sys/class/drm/card0-HDMI-A-2"))
+    const char* drm_path = "/sys/class/drm";
+    int hdmi_count = 0;
+
+    DIR* drm_dir = opendir(drm_path);
+    if (drm_dir) {
+        struct dirent* entry;
+        while ((entry = readdir(drm_dir)) != NULL) {
+            if (entry->d_type == DT_LNK) { //  in link case
+                string drm_subpath = std::string(drm_path) + "/" + entry->d_name;
+
+                // check if cardX-HDMI-?-Y folder ? is A or etc?
+                if (strncmp(entry->d_name, "card", 4) == 0 && strstr(entry->d_name, "-HDMI-") != NULL) {
+                    char resolved_path[PATH_MAX];
+                    if (realpath(drm_subpath.c_str(), resolved_path) != NULL) {
+                        string status_file_path = string(resolved_path) + "/status";
+                        string enabled_file_path = string(resolved_path) + "/enabled";
+
+                        ifstream status_file(status_file_path);
+                        ifstream enabled_file(enabled_file_path);
+
+                        string enabled_content = "", status_content = "";
+
+                        status_file.open(status_file_path) ;
+                        enabled_file.open(enabled_file_path);
+                        if ( status_file && enabled_file) {
+                            getline(status_file, status_content);
+                            status_file.close();
+                            getline(enabled_file, enabled_content);
+                            enabled_file.close();
+                            if (enabled_content == "enabled" && status_content == "connected") {
+                                hdmi_count++;
+                            }
+                            g_Logger.debugLog(Logger::MSGID_SETTINGS, "%s (ready) enabled(%s), status(%s)", entry->d_name, enabled_content.c_str(), status_content.c_str());
+                        } else {
+                            g_Logger.debugLog(Logger::MSGID_SETTINGS, "%s not ready", status_file_path.c_str());
+                        }
+                    }
+                }
+            }
+        }
+        closedir(drm_dir);
+    }
+
+    if (hdmi_count >= 2) {
+        g_Logger.debugLog(Logger::MSGID_SETTINGS, "Connected HDMI devices(%d),but return 2", hdmi_count);
         return 2;
-    else
-        return 1;
+    } else if (hdmi_count == 1) {
+        g_Logger.debugLog(Logger::MSGID_SETTINGS, "Connected HDMI devices(%d)", hdmi_count);
+    } else {
+        g_Logger.debugLog(Logger::MSGID_SETTINGS, "No Connected HDMI devices(%d),but return 1", hdmi_count);
+    }
+    return 1;
 }
 
 void StaticEventDB::updateConf(pbnjson::JValue jsonConf)
