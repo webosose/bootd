@@ -78,8 +78,8 @@ int StaticEventDB::getDisplayCnt()
                         string status_file_path = string(resolved_path) + "/status";
                         string enabled_file_path = string(resolved_path) + "/enabled";
 
-                        ifstream status_file(status_file_path);
-                        ifstream enabled_file(enabled_file_path);
+                        ifstream status_file;
+                        ifstream enabled_file;
 
                         string enabled_content = "", status_content = "";
 
