@@ -61,65 +61,58 @@ void StaticEventDB::printInformation()
 
 int StaticEventDB::getDisplayCnt()
 {
-    // check files and folders for debug
-    bool Hdmi_A1_ready=false;
-    bool Hdmi_A2_ready=false;
-    string Hdmi_A1_enabledFile="/sys/class/drm/card0-HDMI-A-1/enabled";
-    string Hdmi_A1_statusFile="/sys/class/drm/card0-HDMI-A-1/status";
-    string Hdmi_A2_enabledFile="/sys/class/drm/card0-HDMI-A-2/enabled";
-    string Hdmi_A2_statusFile="/sys/class/drm/card0-HDMI-A-2/status";
-    ifstream file;
-    string Hdmi_A1_enabled = "", Hdmi_A1_status = "", Hdmi_A2_enabled = "", Hdmi_A2_status = "";
+    const char* drm_path = "/sys/class/drm";
+    int hdmi_count = 0;
 
-    file.open(Hdmi_A1_enabledFile);
-    if (file.fail()) {
-        g_Logger.debugLog(Logger::MSGID_SETTINGS, "%s=File Open Failed(%s)", __FUNCTION__, Hdmi_A1_enabledFile.c_str());
-    } else {
-        std::getline(file, Hdmi_A1_enabled);
-        file.close();
+    DIR* drm_dir = opendir(drm_path);
+    if (drm_dir) {
+        struct dirent* entry;
+        while ((entry = readdir(drm_dir)) != NULL) {
+            if (entry->d_type == DT_LNK) { //  in link case
+                string drm_subpath = std::string(drm_path) + "/" + entry->d_name;
+
+                // check if cardX-HDMI-?-Y folder ? is A or etc?
+                if (strncmp(entry->d_name, "card", 4) == 0 && strstr(entry->d_name, "-HDMI-") != NULL) {
+                    char resolved_path[PATH_MAX];
+                    if (realpath(drm_subpath.c_str(), resolved_path) != NULL) {
+                        string status_file_path = string(resolved_path) + "/status";
+                        string enabled_file_path = string(resolved_path) + "/enabled";
+
+                        ifstream status_file;
+                        ifstream enabled_file;
+
+                        string enabled_content = "", status_content = "";
+
+                        status_file.open(status_file_path) ;
+                        enabled_file.open(enabled_file_path);
+                        if ( status_file && enabled_file) {
+                            getline(status_file, status_content);
+                            status_file.close();
+                            getline(enabled_file, enabled_content);
+                            enabled_file.close();
+                            if (enabled_content == "enabled" && status_content == "connected") {
+                                hdmi_count++;
+                            }
+                            g_Logger.debugLog(Logger::MSGID_SETTINGS, "%s (ready) enabled(%s), status(%s)", entry->d_name, enabled_content.c_str(), status_content.c_str());
+                        } else {
+                            g_Logger.debugLog(Logger::MSGID_SETTINGS, "%s not ready", status_file_path.c_str());
+                        }
+                    }
+                }
+            }
+        }
+        closedir(drm_dir);
     }
 
-    file.open(Hdmi_A1_statusFile);
-    if (file.fail()) {
-        g_Logger.debugLog(Logger::MSGID_SETTINGS, "%s=File Open Failed(%s)", __FUNCTION__, Hdmi_A1_statusFile.c_str());
-    } else {
-        std::getline(file, Hdmi_A1_status);
-        file.close();
-    }
-
-    if (Hdmi_A1_enabled == "enabled" && Hdmi_A1_status == "connected") {
-        Hdmi_A1_ready = true;
-    }
-
-    file.open(Hdmi_A2_enabledFile);
-    if (file.fail()) {
-        g_Logger.debugLog(Logger::MSGID_SETTINGS, "%s=File Open Failed(%s)", __FUNCTION__, Hdmi_A2_enabledFile.c_str());
-    } else {
-        std::getline(file, Hdmi_A2_enabled);
-        file.close();
-    }
-
-    file.open(Hdmi_A2_statusFile);
-    if (file.fail()) {
-        g_Logger.debugLog(Logger::MSGID_SETTINGS, "%s=File Open Failed(%s)", __FUNCTION__, Hdmi_A2_statusFile.c_str());
-    } else {
-        std::getline(file, Hdmi_A2_status);
-        file.close();
-    }
-
-    if (Hdmi_A2_enabled == "enabled" && Hdmi_A2_status == "connected") {
-        Hdmi_A2_ready = true;
-    }
-
-    g_Logger.debugLog(Logger::MSGID_SETTINGS, "card0-HDMI-A-1(%s) enabled(%s), status(%s)/ card0-HDMI-A-2(%s) enabled(%s), status(%s)",
-                                               Hdmi_A1_ready ? "ready" : "not ready", Hdmi_A1_enabled.c_str(), Hdmi_A1_status.c_str(),
-                                               Hdmi_A2_ready ? "ready" : "not ready", Hdmi_A2_enabled.c_str(), Hdmi_A2_status.c_str());
-
-    if (Hdmi_A1_ready && Hdmi_A2_ready) {
+    if (hdmi_count >= 2) {
+        g_Logger.debugLog(Logger::MSGID_SETTINGS, "Connected HDMI devices(%d),but return 2", hdmi_count);
         return 2;
+    } else if (hdmi_count == 1) {
+        g_Logger.debugLog(Logger::MSGID_SETTINGS, "Connected HDMI devices(%d)", hdmi_count);
     } else {
-        return 1;
+        g_Logger.debugLog(Logger::MSGID_SETTINGS, "No Connected HDMI devices(%d),but return 1", hdmi_count);
     }
+    return 1;
 }
 
 void StaticEventDB::updateConf(pbnjson::JValue jsonConf)
