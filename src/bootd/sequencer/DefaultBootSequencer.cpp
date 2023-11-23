@@ -88,7 +88,7 @@ void DefaultBootSequencer::doBoot()
 void DefaultBootSequencer::launchTargetApp(string appId, bool visible, bool keepAlive, int displayId)
 {
     Application application;
-    application.setAppId(appId);
+    application.setAppId(std::move(appId));
     application.setVisible(visible);
     application.setDisplayId(displayId);
 

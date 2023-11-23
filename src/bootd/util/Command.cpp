@@ -24,7 +24,7 @@
 #include "Command.h"
 
 Command::Command(string command)
-    : m_comm(command),
+    : m_comm(std::move(command)),
       m_args(),
       m_pid(-1),
       m_status(-1),

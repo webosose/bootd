@@ -55,7 +55,7 @@ bool AbsService::getServerStatus(Handle *handle, string serviceName)
 }
 
 AbsService::AbsService(string name)
-    : m_name(name),
+    : m_name(std::move(name)),
       m_serverStatus()
 {
 }
@@ -91,7 +91,7 @@ bool AbsService::registerServerStatus(Handle *handle, ServerStatusCallback callb
     // TODO: Do we need to consider service on/off status in service classes?
     // If it is 'yes', we need to implement some logic for that
     // For example, subscriptions should be closed if service is down.
-    m_callback = callback;
+    m_callback = std::move(callback);
     m_serverStatus = handle->registerServerStatus(m_name.c_str(), m_callback);
     return true;
 }

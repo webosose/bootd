@@ -73,7 +73,7 @@ bool DynamicEventDB::getEventStatus(string eventName, JValue &extra)
 
 bool DynamicEventDB::replaceEventsInfo(JValue &events, string origin, string &result)
 {
-    result = origin;
+    result = std::move(origin);
 
     for (int i = 0; i < events.arraySize(); i++) {
         string pattern = "${" + events[i].asString() + "}";
@@ -165,7 +165,7 @@ bool DynamicEventDB::existEvent(GMainLoop* mainLoop, string eventName, int secon
                       "EventCore waits event(%s)/timeout(%d)",
                       eventName.c_str(), seconds);
 
-    m_existEvent = eventName;
+    m_existEvent = std::move(eventName);
     m_waitEventTimeoutId = g_timeout_add_seconds(seconds, DynamicEventDB::_waitEventTimeout, this);
     m_isInLoop = true;
     while (m_isInLoop) {
@@ -192,7 +192,7 @@ bool DynamicEventDB::waitEvent(GMainLoop* mainLoop, string eventName, int second
                       "EventCore waits event(%s)/timeout(%d)",
                       eventName.c_str(), seconds);
 
-    m_waitEvent = eventName;
+    m_waitEvent = std::move(eventName);
     m_waitEventTimeoutId = g_timeout_add_seconds(seconds, DynamicEventDB::_waitEventTimeout, this);
     m_isInLoop = true;
     while (m_isInLoop) {
@@ -276,7 +276,7 @@ DONE:
     callEventListeners(eventName, TriggerEvent);
 
     if (!m_asyncEventData.empty())
-        callAsyncEventListeners(eventName);
+        callAsyncEventListeners(std::move(eventName));
 
     return true;
 }
@@ -303,7 +303,7 @@ DONE:
         m_waitEventTimeoutId = 0;
         m_isInLoop = false;
     }
-    callEventListeners(eventName, ClearEvent);
+    callEventListeners(std::move(eventName), ClearEvent);
     return true;
 }
 

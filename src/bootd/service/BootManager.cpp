@@ -82,7 +82,7 @@ bool BootManager::generateSignal(LSMessage &message)
         goto Done;
     }
 
-    DynamicEventDB::instance()->triggerEvent(name);
+    DynamicEventDB::instance()->triggerEvent(std::move(name));
 
     if (!m_bootManagerListener->onGenerateSignal(requestPayload)) {
         errorText = "onGenerateSignal fails";

@@ -72,7 +72,7 @@ void Application::printInfo()
 
 void Application::setAppId(string appId)
 {
-    m_appId = appId;
+    m_appId = std::move(appId);
 }
 
 string& Application::getAppId()
@@ -89,7 +89,7 @@ void Application::setParams(JValue params) {
                       "Params is not null: from(%s)->to(%s)",
                       m_params.stringify().c_str(),
                       params.stringify().c_str());
-    m_params = params;
+    m_params = std::move(params);
 }
 
 JValue& Application::getParams()

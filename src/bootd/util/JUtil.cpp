@@ -47,7 +47,7 @@ pbnjson::JValue JUtil::parseFile(const char *file)
 
 void JUtil::getValueWithKeys(JValue root, JValue keys, JValue &value)
 {
-    JValue current = root;
+    JValue current = std::move(root);
     std::string subKey;
 
     for (int i = 0; i < keys.arraySize(); i++) {
@@ -62,7 +62,7 @@ void JUtil::getValueWithKeys(JValue root, JValue keys, JValue &value)
         }
     }
 
-    value = current;
+    value = std::move(current);
 }
 
 bool JUtil::isNotNull(JValue &value)
