@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2018 LG Electronics, Inc.
+// Copyright (c) 2013-2024 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -52,9 +52,6 @@ void StaticEventDB::printInformation()
     struct timespec basetime;
 
     g_Logger.getBaseTime(basetime);
-    g_Logger.infoLog(Logger::MSGID_SETTINGS, "--DeviceType=%s", WEBOS_TARGET_MACHINE);
-    g_Logger.infoLog(Logger::MSGID_SETTINGS, "--Distro=%s", WEBOS_TARGET_DISTRO);
-    g_Logger.infoLog(Logger::MSGID_SETTINGS, "--DistroVariant=%s", WEBOS_TARGET_DISTRO_VARIANT);
     g_Logger.infoLog(Logger::MSGID_SETTINGS, "--NFSBoot=%s", isNFSBoot() ? "YES" : "NO");
     g_Logger.infoLog(Logger::MSGID_SETTINGS, "--TimeDiff=%ld.%ld(s) ", basetime.tv_sec, basetime.tv_nsec ? (basetime.tv_nsec / 1000000) : 0);
 }
@@ -135,21 +132,8 @@ void StaticEventDB::parseConfFile(string file)
     g_Logger.infoLog(Logger::MSGID_SETTINGS, "Read configuration (%s)", file.c_str());
     JValue jsonConf = JUtil::parseFile(file.c_str());
 
-    // 1. Common Configuration
     if (jsonConf.hasKey("common")) {
         updateConf(jsonConf["common"]);
-    }
-    // 2. Machine Configuration
-    if (jsonConf.hasKey(WEBOS_TARGET_MACHINE)) {
-        updateConf(jsonConf[WEBOS_TARGET_MACHINE]);
-    }
-    // 3. Distro Configuration
-    if (jsonConf.hasKey(WEBOS_TARGET_DISTRO)) {
-        updateConf(jsonConf[WEBOS_TARGET_DISTRO]);
-    }
-    // 4. Distro-variant Configuration
-    if (jsonConf.hasKey(WEBOS_TARGET_DISTRO_VARIANT)) {
-        updateConf(jsonConf[WEBOS_TARGET_DISTRO_VARIANT]);
     }
 }
 
