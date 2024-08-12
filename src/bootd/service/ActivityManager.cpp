@@ -38,27 +38,21 @@ bool ActivityManager::restart(Handle *handle, Activity &activity)
     pbnjson::JValue requestPayload = pbnjson::Object();
     requestPayload.put("restart", true);
 
-    try {
-        auto call = handle->callOneReply(
-            API,
-            requestPayload.stringify().c_str()
-        );
-        g_Logger.debugLog(Logger::MSGID_CLIENT, "Call %s - Request: %s", API, requestPayload.stringify().c_str());
-        auto reply = call.get(this->getTimeout());
-        if (!reply) {
-            g_Logger.errorLog(Logger::MSGID_CLIENT, "No reply in %d ms", this->getTimeout());
-            return false;
-        }
-        if (reply.isHubError()) {
-            g_Logger.errorLog(Logger::MSGID_CLIENT, "Error occurred: %s", reply.getPayload());
-            return false;
-        }
-        g_Logger.debugLog(Logger::MSGID_CLIENT, "Response: %s", reply.getPayload());
-    }
-    catch (const LS::Error &e) {
-        g_Logger.errorLog(Logger::MSGID_CLIENT, "Exception: %s", e.what());
+    auto call = handle->callOneReply(
+        API,
+        requestPayload.stringify().c_str()
+    );
+    g_Logger.debugLog(Logger::MSGID_CLIENT, "Call %s - Request: %s", API, requestPayload.stringify().c_str());
+    auto reply = call.get(this->getTimeout());
+    if (!reply) {
+        g_Logger.errorLog(Logger::MSGID_CLIENT, "No reply in %d ms", this->getTimeout());
         return false;
     }
+    if (reply.isHubError()) {
+        g_Logger.errorLog(Logger::MSGID_CLIENT, "Error occurred: %s", reply.getPayload());
+        return false;
+    }
+    g_Logger.debugLog(Logger::MSGID_CLIENT, "Response: %s", reply.getPayload());
     return true;
 }
 
@@ -70,32 +64,26 @@ bool ActivityManager::create(Handle *handle, Activity &activity)
     requestPayload.put("replace", true);
     requestPayload.put("start", true);
 
-    try {
-        auto call = handle->callOneReply(
-            API,
-            requestPayload.stringify().c_str()
-        );
-        g_Logger.debugLog(Logger::MSGID_CLIENT, "Call %s - Request: %s", API, requestPayload.stringify().c_str());
-        auto reply = call.get(this->getTimeout());
-        if (!reply) {
-            g_Logger.errorLog(Logger::MSGID_CLIENT, "No reply in %d ms", this->getTimeout());
-            return false;
-        }
-        if (reply.isHubError()) {
-            g_Logger.errorLog(Logger::MSGID_CLIENT, "Error occurred: %s", reply.getPayload());
-            return false;
-        }
-        pbnjson::JValue replyPayload = JDomParser::fromString(reply.getPayload());
-        int activityId = replyPayload["activityId"].asNumber<int32_t>();
-        activity.setId(activityId);
-        g_Logger.debugLog(Logger::MSGID_CLIENT, "Response: %s, activityName: %s, activityId: %d",
-                reply.getPayload(),
-                activity.getName().c_str(),
-                activityId);
-    }
-    catch (const LS::Error &e) {
-        g_Logger.errorLog(Logger::MSGID_CLIENT, "Exception: %s", e.what());
+    auto call = handle->callOneReply(
+        API,
+        requestPayload.stringify().c_str()
+    );
+    g_Logger.debugLog(Logger::MSGID_CLIENT, "Call %s - Request: %s", API, requestPayload.stringify().c_str());
+    auto reply = call.get(this->getTimeout());
+    if (!reply) {
+        g_Logger.errorLog(Logger::MSGID_CLIENT, "No reply in %d ms", this->getTimeout());
         return false;
     }
+    if (reply.isHubError()) {
+        g_Logger.errorLog(Logger::MSGID_CLIENT, "Error occurred: %s", reply.getPayload());
+        return false;
+    }
+    pbnjson::JValue replyPayload = JDomParser::fromString(reply.getPayload());
+    int activityId = replyPayload["activityId"].asNumber<int32_t>();
+    activity.setId(activityId);
+    g_Logger.debugLog(Logger::MSGID_CLIENT, "Response: %s, activityName: %s, activityId: %d",
+            reply.getPayload(),
+            activity.getName().c_str(),
+            activityId);
     return true;
 }

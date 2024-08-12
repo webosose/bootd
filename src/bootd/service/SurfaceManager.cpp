@@ -60,19 +60,13 @@ bool SurfaceManager::registerServiceCategory(Handle *handle, SurfaceManagerListe
     requestPayload.put("serviceName", SurfaceManager::SERVICE_NAME);
     requestPayload.put("category", "/");
 
-    try {
-        g_Logger.debugLog(Logger::MSGID_CLIENT, "Call %s", API);
-        listener->m_call = handle->callMultiReply(
-            API,
-            requestPayload.stringify().c_str()
-        );
-        listener->m_call.continueWith(_registerServiceCategory, listener);
-        g_Logger.debugLog(Logger::MSGID_CLIENT, "Request : %s", requestPayload.stringify().c_str());
-    }
-    catch (const LS::Error &e) {
-        g_Logger.errorLog(Logger::MSGID_CLIENT, "Exception : %s", e.what());
-        return false;
-    }
+    g_Logger.debugLog(Logger::MSGID_CLIENT, "Call %s", API);
+    listener->m_call = handle->callMultiReply(
+        API,
+        requestPayload.stringify().c_str()
+    );
+    listener->m_call.continueWith(_registerServiceCategory, listener);
+    g_Logger.debugLog(Logger::MSGID_CLIENT, "Request : %s", requestPayload.stringify().c_str());
     return true;
 }
 
@@ -82,26 +76,20 @@ bool SurfaceManager::showSpinner(Handle *handle, bool show)
     pbnjson::JValue requestPayload = pbnjson::Object();
     requestPayload.put("show", show);
 
-    try {
-        auto call = handle->callOneReply(
-            API,
-            requestPayload.stringify().c_str()
-        );
-        g_Logger.debugLog(Logger::MSGID_CLIENT, "Call %s - Request : %s", API, requestPayload.stringify().c_str());
-        auto reply = call.get(this->getTimeout());
-        if (!reply) {
-            g_Logger.errorLog(Logger::MSGID_CLIENT, "No reply in %d ms", this->getTimeout());
-            return false;
-        }
-        if (reply.isHubError()) {
-            g_Logger.errorLog(Logger::MSGID_CLIENT, "Error occurred : %s", reply.getPayload());
-            return false;
-        }
-        g_Logger.debugLog(Logger::MSGID_CLIENT, "Response : %s", reply.getPayload());
-    }
-    catch (const LS::Error &e) {
-        g_Logger.errorLog(Logger::MSGID_CLIENT, "Exception : %s", e.what());
+    auto call = handle->callOneReply(
+        API,
+        requestPayload.stringify().c_str()
+    );
+    g_Logger.debugLog(Logger::MSGID_CLIENT, "Call %s - Request : %s", API, requestPayload.stringify().c_str());
+    auto reply = call.get(this->getTimeout());
+    if (!reply) {
+        g_Logger.errorLog(Logger::MSGID_CLIENT, "No reply in %d ms", this->getTimeout());
         return false;
     }
+    if (reply.isHubError()) {
+        g_Logger.errorLog(Logger::MSGID_CLIENT, "Error occurred : %s", reply.getPayload());
+        return false;
+    }
+    g_Logger.debugLog(Logger::MSGID_CLIENT, "Response : %s", reply.getPayload());
     return true;
 }

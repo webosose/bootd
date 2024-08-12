@@ -38,29 +38,23 @@ bool Configd::getConfigs(Handle *handle, JValue &configNames, JValue &response)
     pbnjson::JValue requestPayload = pbnjson::Object();
     requestPayload.put("configNames", configNames);
 
-    try {
-        g_Logger.debugLog(Logger::MSGID_CLIENT, "Call %s", API);
-        auto call = handle->callOneReply(
-            API,
-            requestPayload.stringify().c_str()
-        );
-        g_Logger.debugLog(Logger::MSGID_CLIENT, "Request: %s", requestPayload.stringify().c_str());
-        auto reply = call.get(getTimeout());
-        if (!reply) {
-            g_Logger.errorLog(Logger::MSGID_CLIENT, "No reply in %d ms", getTimeout());
-            return false;
-        }
-        if (reply.isHubError()) {
-            g_Logger.errorLog(Logger::MSGID_CLIENT, "Error occurred: %s", reply.getPayload());
-            return false;
-        }
-
-        response = JUtil::parse(reply.getPayload());
-    }
-    catch (const LS::Error &e) {
-        g_Logger.errorLog(Logger::MSGID_CLIENT, "Exception: %s", e.what());
+    g_Logger.debugLog(Logger::MSGID_CLIENT, "Call %s", API);
+    auto call = handle->callOneReply(
+        API,
+        requestPayload.stringify().c_str()
+    );
+    g_Logger.debugLog(Logger::MSGID_CLIENT, "Request: %s", requestPayload.stringify().c_str());
+    auto reply = call.get(getTimeout());
+    if (!reply) {
+        g_Logger.errorLog(Logger::MSGID_CLIENT, "No reply in %d ms", getTimeout());
         return false;
     }
+    if (reply.isHubError()) {
+        g_Logger.errorLog(Logger::MSGID_CLIENT, "Error occurred: %s", reply.getPayload());
+        return false;
+    }
+
+    response = JUtil::parse(reply.getPayload());
     return true;
 }
 

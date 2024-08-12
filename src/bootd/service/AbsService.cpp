@@ -25,31 +25,25 @@ bool AbsService::getServerStatus(Handle *handle, string serviceName)
     pbnjson::JValue requestPayload = pbnjson::Object();
     requestPayload.put("serviceName", serviceName);
 
-    try {
-        auto call = handle->callOneReply(
-            API,
-            requestPayload.stringify().c_str()
-        );
-        g_Logger.debugLog(Logger::MSGID_CLIENT, "Call %s - Request : %s", API, requestPayload.stringify().c_str());
-        auto reply = call.get(AbsService::TIMEOUT_MAX);
-        if (!reply) {
-            g_Logger.errorLog(Logger::MSGID_CLIENT, "No reply in %d ms", AbsService::TIMEOUT_MAX);
-            return false;
-        }
-        if (reply.isHubError()) {
-            g_Logger.errorLog(Logger::MSGID_CLIENT, "Error occurred : %s", reply.getPayload());
-            return false;
-        }
-
-        g_Logger.debugLog(Logger::MSGID_CLIENT, "Response : %s", reply.getPayload());
-        pbnjson::JValue responsePayload = JUtil::parse(reply.getPayload());
-        if (responsePayload.hasKey("connected") && responsePayload["connected"].asBool()) {
-            return true;
-        }
-    }
-    catch (const LS::Error &e) {
-        g_Logger.errorLog(Logger::MSGID_CLIENT, "Exception : %s", e.what());
+    auto call = handle->callOneReply(
+        API,
+        requestPayload.stringify().c_str()
+    );
+    g_Logger.debugLog(Logger::MSGID_CLIENT, "Call %s - Request : %s", API, requestPayload.stringify().c_str());
+    auto reply = call.get(AbsService::TIMEOUT_MAX);
+    if (!reply) {
+        g_Logger.errorLog(Logger::MSGID_CLIENT, "No reply in %d ms", AbsService::TIMEOUT_MAX);
         return false;
+    }
+    if (reply.isHubError()) {
+        g_Logger.errorLog(Logger::MSGID_CLIENT, "Error occurred : %s", reply.getPayload());
+        return false;
+    }
+
+    g_Logger.debugLog(Logger::MSGID_CLIENT, "Response : %s", reply.getPayload());
+    pbnjson::JValue responsePayload = JUtil::parse(reply.getPayload());
+    if (responsePayload.hasKey("connected") && responsePayload["connected"].asBool()) {
+        return true;
     }
     return false;
 }
