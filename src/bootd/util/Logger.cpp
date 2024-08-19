@@ -121,10 +121,10 @@ void Logger::writeBootdLog(const char *type, const char *msgid, const char *msg)
         return;
 
     dprintf(m_fdBootdLog,
-            "%s(%3ld.%09ld) : %s) %s\n",
+            "%s(%3jd.%09jd) : %s) %s\n",
             type,
-            curTime.tv_sec,
-            curTime.tv_nsec,
+            (intmax_t)curTime.tv_sec,
+            (intmax_t)curTime.tv_nsec,
             msgid,
             msg);
 }

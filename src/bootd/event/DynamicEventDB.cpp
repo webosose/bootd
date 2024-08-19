@@ -312,7 +312,7 @@ void DynamicEventDB::callEventListeners(string eventName, EventHandleType type)
     struct timespec curTime;
     char timeBuffer[256] = { 0, };
     g_Logger.getCurrentTime(curTime);
-    sprintf(timeBuffer, "%ld.%09ld", curTime.tv_sec, curTime.tv_nsec);
+    sprintf(timeBuffer, "%jd.%09jd", (intmax_t)curTime.tv_sec, (intmax_t)curTime.tv_nsec);
     m_eventDatabase[eventName].put(KEY_TIME, timeBuffer);
 }
 
