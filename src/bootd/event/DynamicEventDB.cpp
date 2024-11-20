@@ -218,7 +218,7 @@ bool DynamicEventDB::waitAsyncEvent(GMainLoop* mainLoop, string eventName, int s
         g_Logger.debugLog(Logger::MSGID_EVENT,
                           "'%s' event is already completed",
                           eventName.c_str());
-        listener->onWaitAsyncEvent(eventName);
+        listener->onWaitAsyncEvent(std::move(eventName));
         return true;
     }
 
