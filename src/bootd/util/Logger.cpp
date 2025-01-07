@@ -143,7 +143,7 @@ void Logger::performanceLog(const char *msgid, const char *format, ...)
         writeBootdLog("PERFORMANCE", msgid, m_msgBuffer);
     }
     if (m_enablePmLog) {
-        PmLogInfo(m_context, msgid, 0, m_msgBuffer);
+        PmLogInfo(m_context, msgid, 0, "%s", m_msgBuffer);
     }
     if (m_enableConsoleLog) {
         cout << "INFO :" << m_msgBuffer << std::endl;
@@ -164,7 +164,7 @@ void Logger::debugLog(const char *msgid, const char *format, ...)
         writeBootdLog("DEBUG", msgid, m_msgBuffer);
     }
     if (m_enablePmLog) {
-        PmLogDebug(m_context, m_msgBuffer);
+        PmLogDebug(m_context, "%s", m_msgBuffer);
     }
     if (m_enableConsoleLog) {
         cout << "DEBUG : " << m_msgBuffer << endl;
@@ -185,7 +185,7 @@ void Logger::infoLog(const char *msgid, const char *format, ...)
         writeBootdLog("INFO", msgid, m_msgBuffer);
     }
     if (m_enablePmLog) {
-        PmLogInfo(m_context, msgid, 0, m_msgBuffer);
+        PmLogInfo(m_context, msgid, 0, "%s", m_msgBuffer);
     }
     if (m_enableConsoleLog) {
         cout << "INFO :" << m_msgBuffer << std::endl;
@@ -206,7 +206,7 @@ void Logger::warningLog(const char *msgid, const char *format, ...)
         writeBootdLog("WARNING", msgid, m_msgBuffer);
     }
     if (m_enablePmLog) {
-        PmLogWarning(m_context, msgid, 0, m_msgBuffer);
+        PmLogWarning(m_context, msgid, 0, "%s", m_msgBuffer);
     }
     if (m_enableConsoleLog) {
         cerr << "WARNING :" << m_msgBuffer << std::endl;
@@ -227,7 +227,7 @@ void Logger::errorLog(const char *msgid, const char *format, ...)
         writeBootdLog("ERROR", msgid, m_msgBuffer);
     }
     if (m_enablePmLog) {
-        PmLogError(m_context, msgid, 0, m_msgBuffer);
+        PmLogError(m_context, msgid, 0, "%s", m_msgBuffer);
     }
     if (m_enableConsoleLog) {
         cerr << "ERROR :" << m_msgBuffer << std::endl;
